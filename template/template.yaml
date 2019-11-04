@@ -1,0 +1,59 @@
+workflow:
+    version: 0.3.0
+    inputs:
+      files:
+        - $[[code]]
+        - code/analyze.py
+        - data/sequences.txt
+        - data/gt.txt
+      parameters:
+        codefile: code/predict.py
+        inputfile: data/sequences.txt
+        gtfile: data/gt.txt
+        outputfile: results/predict.txt
+    workflow:
+      type: serial
+      specification:
+        steps:
+          - environment: $[[environ]]
+            commands:
+              - $[[command]]
+              - python code/analyze.py
+                  --resultfile "${outputfile}"
+                  --gtfile "${gtfile}"
+                  --outputfile results/analytics.json
+    outputs:
+      files:
+       - results/predict.txt
+       - results/analytics.json
+parameters:
+    - id: 'code'
+      name: 'Code file'
+      datatype: 'file'
+      defaultValue: 'code/predict.py'
+      as: '$input'
+      index: 2
+    - id: 'environ'
+      name: 'Environment'
+      datatype: 'string'
+      defaultValue: 'python:3.7'
+      index: 0
+    - id: 'command'
+      name: 'Command'
+      datatype: 'string'
+      defaultValue: 'python code/predict.py -i "${inputfile}" -o "${outputfile}"'
+      index: 1
+results:
+    file: results/analytics.json
+    schema:
+        - id: avg_diff
+          name: 'Deviation'
+          type: decimal
+        - id: exact_match
+          name: 'Exact Predictions'
+          type: int
+    orderBy:
+        - id: avg_diff
+          sortDesc: false
+        - id: exact_match
+          sortDesc: true
