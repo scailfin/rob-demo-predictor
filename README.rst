@@ -19,59 +19,27 @@ The source code and input files for the demo are included in this repository. Th
 Getting Started
 ===============
 
-The demo requires an instance of the `ROB Web Service <https://github.com/scailfin/rob-webapi-flask/blob/master/README.rst>`_ and the `ROB Command Line Interface <https://github.com/scailfin/rob-client/blob/master/README.rst>`_. The following instructions can be used to setup the environment. The shown commands assume that the setup directory is ``~/projects/rob`` and that a `virtual environment <https://virtualenv.pypa.io/en/stable/>`_ is used:
+The demo requires an instance of the `ROB Web Service <https://github.com/scailfin/rob-webapi-flask/>`_ and the `ROB Command Line Interface <https://github.com/scailfin/rob-client/>`_. You can follow the instructions on the `Flask Web API - Demo Setup site <https://github.com/scailfin/rob-webapi-flask/blob/master/docs/demo-setup.rst>`_ to setup and run the Web API. The `ROB Command Line Interface <https://github.com/scailfin/rob-client/>`_ page contains information to install the client.
+
+Use the ``robadm`` command line client from the Web API to create a new benchmark. Make sure to set the environment variables that configure the database accordingly, e.g.,:
 
 .. code-block:: bash
 
-    # -- Create the project directory and the virtual environment
-
-    mkdir ~/projects/rob
-    cd ~/projects/rob
-    virtualenv ~/.venv/rob
-    source ~/.venv/rob/bin/activate
-
-    # -- Install the ROB core library
-
-    git clone https://github.com/scailfin/rob-core.git
-    cd rob-core/
-    pip install -e .
-    cd ..
-
-    # --  Install anc configure Web service
-
-    git clone https://github.com/scailfin/rob-webapi-flask.git
-    cd rob-webapi-flask/
-    pip install -e .
-    export FLASK_APP=robflask.api
-    export FLASK_ENV=development
-    export ROB_API_DIR=~/projects/rob/.rob
-    export ROB_ENGINE_CLASS=MultiProcessWorkflowEngine
-    export ROB_ENGINE_MODULE=robcore.controller.backend.multiproc
-    cd ..
-
-    # -- Create the ROB database
-
     export ROB_DBMS=SQLITE3
-    export SQLITE_ROB_CONNECT=~/projects/rob/.rob/db.sqlite
-    robadm init
+    export SQLITE_ROB_CONNECT=./.rob/db.sqlite
 
-    # Install the ROB command line client
-    git clone https://github.com/scailfin/rob-client.git
-    cd rob-client/
-    pip install -e .
-    cd ..
+
+If the Web API is running on your local machine with the default settings there is no need to configure additional environment variables. If the Web API is running on a different machine or port, for example, set the environment variables **ROB_API_HOST**, **ROB_API_PORT**, and **ROB_API_PATH** accordingly (see `the documentation <https://github.com/scailfin/rob-core/blob/master/docs/configuration.rst>`_ for details).
 
 
 
 Number Predictor Benchmark
 --------------------------
 
-
 The following commands will download the demo and register it as a new benchmark with the local ROB Web Service:
 
 .. code-block:: bash
 
-    cd ~/projects/rob
     git clone https://github.com/scailfin/rob-demo-predictor.git
     robadm benchmarks create -n "Number Predictor" \
         -d "Simple Number Predictor Demo" \
@@ -79,21 +47,61 @@ The following commands will download the demo and register it as a new benchmark
         -s rob-demo-predictor/template/
 
 
-Start the Web Service:
+To confirm that everything worked as expected use the ``rob`` command line tool to list available benchmarks:
 
 .. code-block:: bash
 
-    flask run
-
-
-Use a separate terminal to interact with the Web Service:
-
-.. code-block:: bash
-
-    # -- Register a new user and login
-
-    rob register -u myuser -p mypwd
-    eval $(rob login -u myuser -p mypwd)
-
-    # -- List benchmarks
     rob benchmarks list
+
+
+The output should contain at least the created benchmark. Note that the benchmark identifier will likely be different every time you register a benchmark.
+
+
+.. code-block:: console
+
+    ID       | Name             | Description
+    ---------|------------------|-----------------------------
+    2a0f6059 | Number Predictor | Simple Number Predictor Demo
+
+
+Run the Benchmark
+=================
+
+The repository provides several different implementations for the predictor:
+
+- `max-value.py <https://github.com/scailfin/rob-demo-predictor/blob/master/solutions/max-value.py>`_: Uses the maximum value in a given sequence as the prediction result.
+- `max-n-value.py <https://github.com/scailfin/rob-demo-predictor/blob/master/solutions/max-n-value.py>`_: Uses the maximum value in a given sequence and adds a given constant value as the prediction result.
+- `last-two-diff.py <https://github.com/scailfin/rob-demo-predictor/blob/master/solutions/last-two-diff.py>`_: Uses the difference between last two values in a given sequence a the prediction result.
+- `add-first.py <https://github.com/scailfin/rob-demo-predictor/blob/master/solutions/add-first.py>`_: Uses the sum of the first value and the last value in a given sequence to determine the result.
+- `AddDiffOfLastTwoValues.java <https://github.com/scailfin/rob-demo-predictor/blob/master/solutions/java-predictor/src/main/java/org/rob/demo/predictor/AddDiffOfLastTwoValues.java>`_: Implementation of the predictor that uses Java as the programming language instead of Python. Uses the sum of the last value and the difference between the last value and the next-to-last value in a given sequence as the prediction result.
+
+
+In the following we register a new user **alice** and create a submission for the *Predictor* benchmark.
+
+.. code-block:: bash
+
+    # Register new user
+    rob register -u alice -p mypwd
+    # Login as alice
+    eval $(rob login -u alice -p mypwd)
+    # Set predictor benchmark as the default benchmark
+    export ROB_BENCHMARK=2a0f6059
+    # Create a new submission for the benchmark.
+    rob submissions create -n 'Team Alice'
+
+
+We use the *max-value.py* predictor to run the benchmark. This requires us to first upload the code file. We then use the unique file identifier as the argument when running the benchmark.
+
+
+A look at the current leader board shows the result of the benchmark run.
+
+.. code-block:: bash
+
+    rob benchmark leaders
+
+.. code-block:: console
+
+    Rank | User  | Deviation | Exact Predictions
+    -----|-------|-----------|------------------
+       1 | bob   |       2.2 |                 2
+       2 | alice |       4.8 |                 0

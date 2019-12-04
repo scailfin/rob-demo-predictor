@@ -7,7 +7,7 @@
 # terms of the MIT License; see LICENSE file for more details.
 
 """Submission for the ROB Number Predictor Benchmark. Uses the maximum value in
-a given sequenc to determine the result.
+a given sequence and adds a given constant value as the prediction result.
 """
 
 from __future__ import absolute_import, division, print_function

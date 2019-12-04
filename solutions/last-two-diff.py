@@ -7,7 +7,7 @@
 # terms of the MIT License; see LICENSE file for more details.
 
 """Submission for the ROB Number Predictor Benchmark. Uses the difference
-between last two values in a given sequenc to determine the result.
+between last two values in a given sequence a the prediction result.
 """
 
 from __future__ import absolute_import, division, print_function

@@ -14,18 +14,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Submission for the ROB Number Predictor Benchmark. Uses the sum of the last
+ * value and the difference between the last value and the next-to-last value
+ * in a given sequence as the prediction result.
  *
  * @author Heiko Mueller <heiko.mueller@nyu.edu>
  */
 public class AddDiffOfLastTwoValues {
-    
+
     public static void main(String[] args) {
-        
+
         if (args.length != 2) {
             System.out.println("Usage: <input-file> <output-file>");
             System.exit(-1);
         }
-        
+
         File inputFile = new File(args[0]);
         File outputFile = new File(args[1]);
 
@@ -35,7 +38,7 @@ public class AddDiffOfLastTwoValues {
                 outputFolder.mkdirs();
             }
         }
-        
+
         try (
                 BufferedReader in = new BufferedReader(new FileReader(inputFile));
                 PrintWriter out = new PrintWriter(new FileWriter(outputFile))

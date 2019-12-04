@@ -6,8 +6,8 @@
 # ROB is free software; you can redistribute it and/or modify it under the
 # terms of the MIT License; see LICENSE file for more details.
 
-"""Submission for the ROB Number Predictor Benchmark. Uses the first values
-in a given sequenc to determine the result.
+"""Submission for the ROB Number Predictor Benchmark. Uses the sum of the first
+value and the last value in a given sequence as the prediction result.
 """
 
 from __future__ import absolute_import, division, print_function
