@@ -61,7 +61,7 @@ The output should contain at least the created benchmark. Note that the benchmar
 
     ID       | Name             | Description
     ---------|------------------|-----------------------------
-    2a0f6059 | Number Predictor | Simple Number Predictor Demo
+    b8a00aee | Number Predictor | Simple Number Predictor Demo
 
 
 Run the Benchmark
@@ -85,12 +85,34 @@ In the following we register a new user **alice** and create a submission for th
     # Login as alice
     eval $(rob login -u alice -p mypwd)
     # Set predictor benchmark as the default benchmark
-    export ROB_BENCHMARK=2a0f6059
-    # Create a new submission for the benchmark.
+    export ROB_BENCHMARK=b8a00aee
+    # Create a new submission for the benchmark. Use the unique identifier of
+    # the created submission as the default submission
     rob submissions create -n 'Team Alice'
+    export ROB_SUBMISSION=ac31341529034689a6eb517bc06b3e2d
 
 
 We use the *max-value.py* predictor to run the benchmark. This requires us to first upload the code file. We then use the unique file identifier as the argument when running the benchmark.
+
+
+.. code-block:: bash
+
+    rob files upload -i rob-demo-predictor/solutions/max-value.py
+    rob runs start
+
+.. code-block:: console
+
+    Environment (string) [default 'python:3.7']:
+    Command (string) [default 'python code/predict.py -i "${inputfile}" -o "${outputfile}"']:
+    Code file (file) [default 'code/predict.py']:
+
+    Available files
+    ---------------
+    d341066e6a7a4e0d9188a039d181e507	max-value.py (2019-12-04 10:07:31)
+
+    Code file: d341066e6a7a4e0d9188a039d181e507
+    Target Path:
+    run e937452c843f41b498cd699755af6529 in state RUNNING
 
 
 A look at the current leader board shows the result of the benchmark run.
@@ -101,7 +123,6 @@ A look at the current leader board shows the result of the benchmark run.
 
 .. code-block:: console
 
-    Rank | User  | Deviation | Exact Predictions
-    -----|-------|-----------|------------------
-       1 | bob   |       2.2 |                 2
-       2 | alice |       4.8 |                 0
+    Rank | Submission |          Deviation | Exact Predictions
+    -----|------------|--------------------|------------------
+       1 | Team Alice | 15.716233645501712 |                 3
